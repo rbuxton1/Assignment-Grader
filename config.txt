@@ -1,6 +1,7 @@
 http://10.0.0.205/isthours/names.txt
 http://10.0.0.205/isthours/test/
 
+C:\Program Files\Java\jdk1.8.0_171\bin
 ### ABOUT ###
 Everything above this line is config settings. Line 1 is the location of the names of the labs, stored as .txt file. This can be stored on a web server or on the local disk.
 Line 2 is the locations of the test inputs and expected outputs, as a directory. They should all be .txt files located within the same directory. An example would be like this:
@@ -9,3 +10,4 @@ Line 2 is the locations of the test inputs and expected outputs, as a directory.
   prob002IN.txt
   prob002OUT.txt
 Line 3 should be the IP of the teachers instance. It can be left blank if no teacher instance is used.
+Line 4 is important only if you're using Windows. It will be your JAVA_HOME location. I ran into a lot of problems trying to make it find that out automatically so I ditched it and now you have to input it manually.

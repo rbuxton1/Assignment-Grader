@@ -21,25 +21,16 @@ import javax.swing.JOptionPane;
  * @author ryan
  */
 public class Grader extends javax.swing.JFrame {
+    private String prefix = "";
     private String testFile = "";
     private String curr = "";
-    private String configSet[] = new String[3];
+    private String configSet[] = new String[4];
 
     /**
      * Creates new form Grader
      */
     public Grader() {
         initComponents();
-        
-        if(System.getProperty("os.name").toLowerCase().contains("win")){
-            try{
-                Runtime rt = Runtime.getRuntime();
-                Process p = rt.exec("SET PATH=%PATH%;%JAVA_HOME%\\bin");
-                System.out.println("Set path variables.");
-            } catch(Exception e){
-                System.out.println("Uhoh");
-            }
-        }
         
         curr = Paths.get("").toAbsolutePath().toString();
         System.out.println("Working in " + curr);
@@ -55,9 +46,12 @@ public class Grader extends javax.swing.JFrame {
             } else {
                 System.out.println("\t Config exists.");
                 Scanner in =  new Scanner(config);
-                for(int i = 0; i < 3; i++){
+                String sample = "";
+                for(int i = 0; i < 4; i++){
                     configSet[i] = in.nextLine();
+                    sample += i + ") " + configSet[i] + ", ";
                 }
+                System.out.println(sample);
                 
                 System.out.println("Configs loaded!");
                 Scanner names = new Scanner(new URL(configSet[0]).openStream());
@@ -75,6 +69,24 @@ public class Grader extends javax.swing.JFrame {
             System.exit(0);
         }
         
+        if(System.getProperty("os.name").toLowerCase().contains("win")){
+            if(configSet[3].equals("")){
+                JOptionPane.showMessageDialog(null, 
+                              "Config file issue, contact your teacher. System path not set, therefore compilation will not work.", 
+                              "Config Issue", 
+                              JOptionPane.WARNING_MESSAGE);
+                System.exit(0);
+            }
+            try{
+                prefix = "cmd /c ";
+                Runtime rt = Runtime.getRuntime();
+                Process p = rt.exec(prefix + "SET PATH=%PATH%;" + configSet[3]);
+                System.out.println("Set path variables.");
+            } catch(Exception e){
+                System.out.println("Uhoh " + e);
+            }
+        }
+        
         if(configSet[2].equals("")) submitButton.setEnabled(false);
         
         testButton.addActionListener(new ActionListener(){
@@ -84,15 +96,18 @@ public class Grader extends javax.swing.JFrame {
                     System.out.println("Testing " + currProb);
                 
                     Runtime rt = Runtime.getRuntime();
-                    Process p = rt.exec("javac " + testFile);
-                    System.out.println("\t Generated Class...");
-                    int END = p.waitFor();
+                    String cmd1;
+                    if(System.getProperty("os.name").toLowerCase().contains("win")) cmd1 = prefix + '"' + configSet[3] + "/javac" + '"' + " " + '"' + testFile + '"';
+                    else cmd1 = "javac " + testFile;
+                    Process p = rt.exec(cmd1);
+                    System.out.print("\t Executing '" + cmd1 + "' ... ");
+                    System.out.println(p.waitFor());
                     
                     Scanner casesIn = new Scanner(new URL(configSet[1] + currProb + "IN.txt").openStream());
                     String cases = casesIn.nextLine();
-                    String cmd = "java -cp " + testFile.substring(0, testFile.lastIndexOf(File.separator) + 1) + " " + testFile.substring(testFile.lastIndexOf(File.separator) + 1).replace(".java", "") + " " + cases;
-                    p = rt.exec(cmd);
-                    System.out.println("\t Executing '" + cmd + "'...");
+                    String cmd2 = prefix + "java -cp " + '"' + testFile.substring(0, testFile.lastIndexOf(File.separator) + 1) + + '"' + " " + testFile.substring(testFile.lastIndexOf(File.separator) + 1).replace(".java", "") + " " + cases;
+                    p = rt.exec(cmd2);
+                    System.out.println("\t Executing '" + cmd2 + "'...");
                     
                     Scanner output = new Scanner(new BufferedReader(new InputStreamReader(p.getInputStream())));
                     String out = output.nextLine();
