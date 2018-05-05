@@ -16,7 +16,6 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-
 /**
  *
  * @author ryan
@@ -31,6 +30,16 @@ public class Grader extends javax.swing.JFrame {
      */
     public Grader() {
         initComponents();
+        
+        if(System.getProperty("os.name").toLowerCase().contains("win")){
+            try{
+                Runtime rt = Runtime.getRuntime();
+                Process p = rt.exec("SET PATH=%PATH%;%JAVA_HOME%\\bin");
+                System.out.println("Set path variables.");
+            } catch(Exception e){
+                System.out.println("Uhoh");
+            }
+        }
         
         curr = Paths.get("").toAbsolutePath().toString();
         System.out.println("Working in " + curr);
@@ -77,6 +86,7 @@ public class Grader extends javax.swing.JFrame {
                     Runtime rt = Runtime.getRuntime();
                     Process p = rt.exec("javac " + testFile);
                     System.out.println("\t Generated Class...");
+                    int END = p.waitFor();
                     
                     Scanner casesIn = new Scanner(new URL(configSet[1] + currProb + "IN.txt").openStream());
                     String cases = casesIn.nextLine();
@@ -96,7 +106,7 @@ public class Grader extends javax.swing.JFrame {
                 } catch(Exception ex){
                     JOptionPane.showMessageDialog(null, 
                               "Please contact your teacher.\nERR: " + ex, 
-                              "Initialization error", 
+                              "Execution error", 
                               JOptionPane.WARNING_MESSAGE);
                 }
             }
