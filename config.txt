@@ -1,0 +1,11 @@
+http://10.0.0.205/isthours/names.txt
+http://10.0.0.205/isthours/test/
+
+### ABOUT ###
+Everything above this line is config settings. Line 1 is the location of the names of the labs, stored as .txt file. This can be stored on a web server or on the local disk.
+Line 2 is the locations of the test inputs and expected outputs, as a directory. They should all be .txt files located within the same directory. An example would be like this:
+  prob001IN.txt
+  prob001OUT.txt
+  prob002IN.txt
+  prob002OUT.txt
+Line 3 should be the IP of the teachers instance. It can be left blank if no teacher instance is used.
